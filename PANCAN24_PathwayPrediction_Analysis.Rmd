@@ -6,66 +6,104 @@ output:
 ---
 
 Load all dependecies
-```{r}
-source('~/Documents/PhDProjects/GFRN_signatures-master/Key_ASSIGN_functions_balancedsig.R', echo=TRUE)
-PANCAN_dir = "~/Documents/PhDProjects/Multipathway_Modeling/Results/RasReview/20160503_PANCAN24/COAD/"
+```{r, echo=FALSE}
+
 library(gplots)
 library(data.table)
-```
 
-Read in the pathway predictions from all the cancer types
+source('~/Documents/PhDProjects/GFRN_signatures-master/Key_ASSIGN_functions_balancedsig.R', echo=TRUE)
+PANCAN_dir = "~/Documents/PhDProjects/PANCAN24_Analysis/Data/"
+outFile= "~/Documents/PhDProjects/PANCAN24_Analysis/Data/PANCAN24data.rda"
 
-```{r,echo=FALSE}
-gatherFile_2(PANCAN_dir)
-setwd(PANCAN_dir)
+#
+#pancan12_mutation<-read.csv("~/Documents/PhDProjects/PANCAN24_Analysis/Data/pancan_cleaned_fi
 
-
-filenames<-system("ls */*/*/pathway_activity_testset*", intern=TRUE)
+# Read in the pathway predictions from all the cancer types, #short names
+setwd("~/Documents/PhDProjects/PANCAN24_Analysis/Data/PathwayPredictions/")
+system("ls", intern=TRUE)
+filenames<-system("ls", intern=TRUE)
 filenames
-system("ls */*/pathway_activity_testset*", intern=TRUE)
-
-system("ls */*")
-gatherFile_2<-function(baseDir){
-  ###gathers all the prediction from baseDir/*/*/pathway_activity_testset* format
-  setwd(baseDir)
-  getwd()
-  filenames<-system("ls */*/pathway_activity_testset*", intern=TRUE)
-  filenames
-  
-  data=NULL
-  for(i in 1:length(filenames)){
+var_name_all=NULL
+  for(i in 1:24){
     ###reading in the filess one at a time
     f<-read.csv(filenames[i], header=1,row.names=1)
-    colnames(f)<-paste(filenames[i],colnames(f),sep='/')
-    if(i==1){
-      data<-f
+    f=as.matrix(f)
+    f=f[,c(3,6,8)]
+    cancer_type=paste( "(", gsub('\\..*$','',filenames[i]), ")",sep=(''))
+    sigature_name=gsub('\\_.*$','',colnames(f))
+    #colnames(f)<-paste(toupper(sigature_name), cancer_type, sep=(''))
+    colnames(f)<-toupper(sigature_name)
+    colnames(f)[2]="KRAS"
+    row.names(f)=substr(row.names(f), 1,15)
+    var_name=paste("predictions",gsub('\\..*$','',filenames[i]), sep=('_'))
+    var_name_all=c(var_name_all,var_name)
+    assign(var_name, f)
     }
-    else{
-      data<-cbind(data,f)
-    }
-    
-    View(data)
-  }
-  return(data)
+
+```
+
+
+Read in the mutation data
+```{r}
+setwd("~/Documents/PhDProjects/PANCAN24_Analysis/Data/MutationData/")
+filenames_mut=system("ls *.txt", intern=TRUE)
+length(filenames_mut)
+filenames_mut
+
+filenames_mut[3]
+var_name_all_pred_mut=NULL
+for (i in 1:24){
+  cancerName=paste( "", gsub('\\_.*$','',filenames_mut[i]), "",sep=(''))
+   cancerName
+  mut_file= read.table(filenames_mut[i], header=1,row.names=1, skip=1)
+  rownames(mut_file)
+  class(mut_file)
+  predFile=paste("predictions_", cancerName, sep = "")
+  predFile
+  predFile=get(predFile)
+  head(predFile)
+  dim(predFile)
+  rownames(predFile)
+  predFile=as.data.frame(predFile)
+  class(predFile)
+  head(predFile)
+  preds_muts=merge(predFile, mut_file, by=0)
+  head(preds_muts)
+  colnames(preds_muts)=c("Samples","EGFR", "KRAS", "RAF", "BRAF_gene", "EGFR_gene","KRAS_gene")
+ preds_muts[5:7]
+  preds_muts[5:7] <- lapply(preds_muts[5:7], as.character)
+preds_muts[5:7][preds_muts[5:7]=="NaN"]<-"Not Mutated"
+preds_muts[5:7][preds_muts[5:7]!="Not Mutated"]<-"Mutated"
+preds_muts
+var_name=paste("pred_muts",cancerName, sep=('_'))
+var_name_all_pred_mut=c(var_name_all_pred_mut,var_name)
+assign(var_name, preds_muts)
+print(i)
 }
 
-install.packages("stringi")
-paste(, ".mean", sep="")
-test=getwd()
-test
-strtrim(test, w=-10)
-str_sub(test, w=-10)
-library(stringi)
-stri_sub(test,-4,-1)
+save.image(outFile)
 
-write.table(utms, file=paste(x, ".mean", sep=""))
 
-View(data)
 ```
 
-You can also embed plots, for example:
 
-```{r, echo=FALSE}
-plot(cars)
-```
+
+# non-function
+muts_LAML=read.table(filenames_mut, header=1,row.names=1, skip=1)
+View(muts_LAML)
+row.names(predictions_LAML)
+row.names(muts_LAML)
+LAML_preds_muts=merge_drop(predictions_LAML, muts_LAML)
+colnames(LAML_preds_muts)
+colnames(LAML_preds_muts)=c( "EGFR", "KRAS", "RAF", "BRAF_gene", "EGFR_gene", "KRAS_gene")
+dim(LAML_preds_muts)
+LAML_preds_muts[4:6] <- lapply(LAML_preds_muts[4:6], as.character)
+LAML_preds_muts[4:6][LAML_preds_muts[4:6]=="NaN"]<-"Not Mutated"
+LAML_preds_muts[4:6][LAML_preds_muts[4:6]!="Not Mutated"]<-"Mutated"
+
+
+filenames_mut[1]
+
+View(predictions_ACC)
+
 
