@@ -8,7 +8,7 @@ output:
 Load all dependecies
 ```{r}
 source('~/Documents/PhDProjects/GFRN_signatures-master/Key_ASSIGN_functions_balancedsig.R', echo=TRUE)
-PANCAN_dir = "~/Documents/PhDProjects/Multipathway_Modeling/Results/RasReview/"
+PANCAN_dir = "~/Documents/PhDProjects/Multipathway_Modeling/Results/RasReview/20160503_PANCAN24/COAD/"
 library(gplots)
 library(data.table)
 ```
@@ -16,8 +16,51 @@ library(data.table)
 Read in the pathway predictions from all the cancer types
 
 ```{r,echo=FALSE}
+gatherFile_2(PANCAN_dir)
+setwd(PANCAN_dir)
 
 
+filenames<-system("ls */*/*/pathway_activity_testset*", intern=TRUE)
+filenames
+system("ls */*/pathway_activity_testset*", intern=TRUE)
+
+system("ls */*")
+gatherFile_2<-function(baseDir){
+  ###gathers all the prediction from baseDir/*/*/pathway_activity_testset* format
+  setwd(baseDir)
+  getwd()
+  filenames<-system("ls */*/pathway_activity_testset*", intern=TRUE)
+  filenames
+  
+  data=NULL
+  for(i in 1:length(filenames)){
+    ###reading in the filess one at a time
+    f<-read.csv(filenames[i], header=1,row.names=1)
+    colnames(f)<-paste(filenames[i],colnames(f),sep='/')
+    if(i==1){
+      data<-f
+    }
+    else{
+      data<-cbind(data,f)
+    }
+    
+    View(data)
+  }
+  return(data)
+}
+
+install.packages("stringi")
+paste(, ".mean", sep="")
+test=getwd()
+test
+strtrim(test, w=-10)
+str_sub(test, w=-10)
+library(stringi)
+stri_sub(test,-4,-1)
+
+write.table(utms, file=paste(x, ".mean", sep=""))
+
+View(data)
 ```
 
 You can also embed plots, for example:
