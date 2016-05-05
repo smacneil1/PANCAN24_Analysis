@@ -1,0 +1,28 @@
+---
+title: "PANCAN24"
+output:
+  html_document:
+    toc: yes
+---
+
+Load all dependecies
+```{r}
+source('~/Documents/PhDProjects/GFRN_signatures-master/Key_ASSIGN_functions_balancedsig.R', echo=TRUE)
+PANCAN_dir = "~/Documents/PhDProjects/Multipathway_Modeling/Results/RasReview/"
+library(gplots)
+library(data.table)
+```
+
+Read in the pathway predictions from all the cancer types
+
+```{r,echo=FALSE}
+
+
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
