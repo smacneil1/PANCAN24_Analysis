@@ -81,6 +81,16 @@ assign(var_name, preds_muts)
 print(i)
 }
 
+dim(pred_muts_HNSC)
+dim(pred_muts_READ)
+dim(pred_muts_UCS)
+dim(pred_muts_LUAD)
+dim(pred_muts_OV)
+dim(pred_muts_BRCA)
+dim(pred_muts_KIRP)
+dim(pred_muts_KIRC)
+dim(pred_muts_BLCA)
+
 save.image(outFile)
 
 
